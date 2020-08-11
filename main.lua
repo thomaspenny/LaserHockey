@@ -1,28 +1,29 @@
---Constants that may be changed for small aesthetic/gameplay changes
--- --virtual and real window sizes (resizeable)
+--Constants that may be changed for small aesthetic/gameplay changes.
+-- --Virtual and real window sizes (resizeable).
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 V_WIDTH = 432
 V_HEIGHT = 243
--- --paddle properties: Movement speed, dimensions, and boundaries for movement
+-- --Paddle properties: Movement speed, dimensions, and boundaries for movement.
 PADDLE_SPEED = 100
 paddle_thickness = 8
 paddle_width = 28
 paddle_back = 60
 paddle_front = V_WIDTH/2 -20
--- --ball properties: normal speed, maximum velocities in both x&y directions, radius
+-- --Ball properties: normal speed, maximum velocities in both x&y directions, radius.
 BALL_SPEED = 50
 BALL_max_dx = 350
 BALL_max_dy = 100
 ball_radius = 4
---number of points required to win the game
+-- --Number of points required to win the game.
 PointReq = 3
 -- --Goal width
 Goal_w = 80
 
---load push, class, in-game objects, and tick, which limits the FPS to 60 to limit CPU consumption
+--Load push, class: both external files with sources in their respective codes
 push = require 'push'
 Class = require 'class'
+--In-game objects, and tick, which limits the FPS to 60 to limit CPU consumption.
 require 'Paddle'
 require 'Ball'
 require 'Goal'
@@ -30,11 +31,11 @@ local tick = require 'tick'
 
 --LOAD
 function love.load()
-    --frame rate set at sixty, for smoothest possible game, this may be increased to 120 or higher
+    --Framerate set at 60. This may be increased to improve image smoothness.
     tick.framerate = 60
-    --window title
+    --Window title
     love.window.setTitle('Laser Hockey')
-    --audio files used
+    --Audio files used
     sounds = {
     ['paddle_hit'] = love.audio.newSource('Pickup_Coin31.wav', 'static'),
     ['game_start'] = love.audio.newSource('game_start.mp3', 'static'),
@@ -44,16 +45,16 @@ function love.load()
     }
     sounds['edge_hit']:setVolume(0.25)
    
-    --custom fonts for game
+    --Custom fonts for game.
     MedFont = love.graphics.newFont('basicf.TTF', 18)
     LargeFont = love.graphics.newFont('Mario.TTF', 24)
-    --preloads the scores per game, as well as the current winning player, in order to manage wind-condition
+    --Preloads the scores per game, as well as the current winning player, in order to manage wind-condition.
     P1score = 0
     P2score = 0
     WinningPlayer = 0
 
     --Specify objects' inital position and dimensions: for paddle and goal this is (x,y,size.x,size.y), and only (x,y,radius) for ball.
-    -- --Paddles: paddle_back/front refers to the 'back/front of the court' area where it can move, paddle-thickness must be included to ensure symmetry 
+    -- --Paddles: paddle_back/front refers to the 'back/front of the court' area where it can move, paddle-thickness must be included to ensure symmetry.
     paddle1 = Paddle(paddle_back, (V_HEIGHT-paddle_width)/2,
      paddle_thickness, paddle_width,3,3)
     paddle2 = Paddle(V_WIDTH -paddle_back - paddle_thickness, (V_HEIGHT-paddle_width)/2,
@@ -64,26 +65,26 @@ function love.load()
     -- --Ball
     ball = Ball(V_WIDTH /2, V_HEIGHT /2, ball_radius)
 
-    --seed RNG for initial serve per game
+    --Seed RNG for initial serve per game: based on os-time.
     math.randomseed(os.time())
     servingPlayer = math.random(2) == 1 and 1 or 2
-    --service direction, based on the value determined by math.random, will either serve to player 1 or two
+    --Service direction, based on the value determined by math.random, will either serve to player 1 or two
     if servingPlayer == 1 then
         ball.dx = BALL_SPEED
     else
         ball.dx = -BALL_SPEED
     end
     
-    --game state: there are 4 game states: 
+    --Game state: there are 4 game states: 
     -- --wait: before a new game is played, or once a game has been completed
     -- --start: a new game has started
     -- --serve: a point has been scored during a game
     -- --winner: the game has been won
-    --transitions between these game states are done so by pressing the 'enter' or 'return button' on the keyboard
+    --Transitions between these game states are done so by pressing the 'enter' or 'return button' on the keyboard
     gameState = 'wait'
-    --the inital sound that is played before each game begins
+    --The inital sound that is played before each game begins
     sounds['game_start']:play()
-    --setting resolutions
+    --Setting resolutions
     push:setupScreen(V_WIDTH,V_HEIGHT,WINDOW_WIDTH,WINDOW_HEIGHT, {
         fullscreen = false,
         vsync = true,
@@ -93,7 +94,7 @@ function love.load()
 
 end
 
---allows for the window to be resized but maintain in-game dimensions
+--Allows for the window to be resized but maintain in-game dimensions
 function love.resize(w,h)
     push:resize(w,h)
 end
@@ -223,7 +224,7 @@ function love.update(dt)
         sounds['edge_hit']:play()
     end
 
-    -- Motion 
+    -- Player motion 
     -- --Player 1: uses 'WASD' for movement
     if love.keyboard.isDown('w') then
         paddle1.dy = -PADDLE_SPEED
