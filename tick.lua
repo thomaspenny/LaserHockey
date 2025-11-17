@@ -1,7 +1,3 @@
--- tick
--- https://github.com/bjornbytes/tick
--- MIT License
-
 local tick = {
   framerate = nil,
   rate = .03,
